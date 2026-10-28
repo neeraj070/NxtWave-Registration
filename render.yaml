@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: campusai-growth-hub
+    runtime: node
+    plan: 0.5c-512mb
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: "off"
+    disk:
+      name: campusai-sqlite-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/data/campusai.sqlite
+      - key: APP_URL
+        fromService:
+          type: web
+          name: campusai-growth-hub
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
